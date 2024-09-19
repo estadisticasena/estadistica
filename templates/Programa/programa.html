@@ -20,7 +20,7 @@
                             <div class="col-sm-8">
                                 <select class="form-control form-control-sm custom-select" id="centro_de_formacion" onchange="aplicarFiltros()" required>
 
-                                    <option value=""  {% if not selected_centro_de_formacion %}selected{% endif %}>Selecciona centro de formacion</option>
+                                    <option value="{{selected_centro_de_formacion}}"  {% if not selected_centro_de_formacion %}selected{% endif %}>Selecciona centro de formacion</option>
                                     {% for choice in centro_de_formacion%}
                                         <option value="{{ choice.id }}" {% if choice.id|stringformat:"s" == selected_centro_de_formacion %}selected{% endif %}>{{ choice.centro_de_formacion|title }}</option>
                                     {% endfor %}
@@ -33,7 +33,7 @@
                             <label for="filtroSeleccion1" class="col-sm-5 col-form-label col-form-label-sm text-md-right">Tipo de formación:</label>
                             <div class="col-sm-7">
                                 <select class="form-control form-control-sm custom-select" id="nivel_formacion" onchange="aplicarFiltros()">
-                                    <option value="" disabled {% if not selected_nivel_formacion %}selected{% endif %}>Selecciona Nivel de Formación</option>
+                                    <option value="{{selected_nivel_formacion}}" disabled {% if not selected_nivel_formacion %}selected{% endif %}>Selecciona Nivel de Formación</option>
                                     {% for choice in nivel_formacion %}
                                         <option value="{{ choice.id }}" {% if choice.id|stringformat:"s" == selected_nivel_formacion %}selected{% endif %}>{{ choice.nivel_formacion|title }}</option>
                                     {% endfor %}
@@ -86,36 +86,73 @@
   
     </div>
     
- 
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-5 mb-4">
                 <!-- Tabla 1 -->
                 <div class="custom-scroll-table">
-                    <table class="table-hover custom-table">
-                        <thead class="custom-thead">
-                            <tr>
-                                <th scope="col">Municipios</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for municipio in lista_municipios %}
-                               <tr>
-                                  <td>{{ municipio.nombre_municipio_curso }}</td>
-                                <td>{{ municipio.programa_count }}</td>
-                               </tr>
-                            {% empty %}
+                    <div class="table-container">
+                        <table class="table-hover custom-table">
+                            <thead class="custom-thead">
                                 <tr>
-                                  <td colspan="2">No hay Municipios disponibles</td>
+                                    <th scope="col">Municipios</th>
+                                    <th scope="col">Conteo de Programas</th>
                                 </tr>
-                               {% endfor %}
-                        </tbody>
-                    </table>
-
-                   
-                    
+                            </thead>
+                            <tbody>
+                                {% for municipio in lista_municipios %}
+                                   <tr>
+                                      <td>{{ municipio.nombre_municipio_curso }}</td>
+                                      <td>{{ municipio.programa_count }}</td>
+                                   </tr>
+                                {% empty %}
+                                    <tr>
+                                      <td colspan="2">No hay Municipios disponibles</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Contenedor para la paginación -->
+                    <div class="pagination-wrapper">
+                        <nav aria-label="Paginación de Municipios">
+                            <ul class="pagination">
+                                {% if lista_municipios.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page1=1" aria-label="Primero">
+                                            <span aria-hidden="true">&laquo;&laquo;</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page1={{ lista_municipios.previous_page_number }}&centro_de_formacion={{selected_centro_de_formacion}}&nivel_formacion={{selected_nivel_formacion}}" aria-label="Anterior">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">Página {{ lista_municipios.number }} de {{ lista_municipios.paginator.num_pages }}</span>
+                                </li>
+                                {% if lista_municipios.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page1={{ lista_municipios.next_page_number }}&centro_de_formacion={{selected_centro_de_formacion}}&nivel_formacion={{selected_nivel_formacion}}" aria-label="Siguiente">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page1={{ lista_municipios.paginator.num_pages }}&centro_de_formacion={{selected_centro_de_formacion}}&nivel_formacion={{selected_nivel_formacion}}" aria-label="Último">
+                                            <span aria-hidden="true">&raquo;&raquo;</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
             </div>
+      
+   
+    
+    
             <div class="col-md-5 mb-4">
                 <!-- Tabla 2 (duplicada) -->
                 <div class="custom-scroll-table">
@@ -139,7 +176,47 @@
                             {% endfor %}
                            
                         </tbody>
+                   
+                        
                     </table>
+                    <div class="pagination-wrapper">
+                        <nav aria-label="Paginación de Fichas">
+                            <ul class="pagination justify-content-end">
+                                {% if lista_fichas.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page2=1" aria-label="Primero">
+                                            <span aria-hidden="true">&laquo;&laquo;</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page2={{ lista_fichas.previous_page_number }}&centro_de_formacion={{selected_centro_de_formacion}}&nivel_formacion={{selected_nivel_formacion}}" aria-label="Anterior">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">Página {{ lista_fichas.number }} de {{ lista_fichas.paginator.num_pages }}</span>
+                                </li>
+                                {% if lista_fichas.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page2={{ lista_fichas.next_page_number }}&centro_de_formacion={{selected_centro_de_formacion}}&nivel_formacion={{selected_nivel_formacion}}" aria-label="Siguiente">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page2={{ lista_fichas.paginator.num_pages }}&centro_de_formacion={{selected_centro_de_formacion}}&nivel_formacion={{selected_nivel_formacion}}" aria-label="Último">
+                                            <span aria-hidden="true">&raquo;&raquo;</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                
+
+
+
+
                 </div>
             </div>
         </div>

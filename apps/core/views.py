@@ -559,8 +559,8 @@ class Programa(TemplateView):
     def get(self, request, *args, **kwargs):
         selected_centro_de_formacion = request.GET.get('centro_de_formacion','')
         selected_nivel_formacion = request.GET.get('nivel_formacion','')
-        selected_programa_formacion = request.GET.get('programa_formacion')
-        selected_modalidad = request.GET.get('modalidad')
+        selected_programa_formacion = request.GET.get('programa_formacion','')
+        selected_modalidad = request.GET.get('modalidad','')
         
         modalidad_nombre = ''
         id_modalidad = None
@@ -670,10 +670,15 @@ class Programa(TemplateView):
         
         
         municipios_filtro = lista_filtros.values('nombre_municipio_curso').annotate(programa_count=Count('nombre_programa_formacion')).order_by('nombre_municipio_curso')
-       
+        paginator1 = Paginator(municipios_filtro,10)
+        page_number1 = request.GET.get('page1')
+        page_obj1 = paginator1.get_page(page_number1)
+        
         fichas_filtro = lista_filtros.values('identificador_ficha').order_by('identificador_ficha')
-
-        print('ff',fichas_filtro)
+        paginator2 = Paginator(fichas_filtro,10)
+        page_number2 = request.GET.get('page2')
+        page_obj2 = paginator2.get_page(page_number2)
+ 
      
         context = self.get_context_data(
             nivel_formacion=Nivel_formacion.objects.all(),
@@ -687,8 +692,8 @@ class Programa(TemplateView):
             selected_modalidad=selected_modalidades,
             selected_centro_de_formacion=selected_centro_de_formacion,
             
-            lista_municipios=municipios_filtro,
-            lista_fichas = fichas_filtro,
+            lista_municipios=page_obj1,
+            lista_fichas = page_obj2,
            
           
             

@@ -152,3 +152,18 @@
 .custom-table{
   border: 1px solid #dee2e6;
 }
+
+
+/* Estilo para el contenedor de la tabla */
+
+/* Estilo para la tabla */
+.custom-table {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.pagination-wrapper {
+  display: flex; /* Usar flexbox para centrar */
+  justify-content: center; /* Centra horizontalmente el contenido */
+  margin-top: 1rem; /* Espacio entre la tabla y la paginación */
+}
