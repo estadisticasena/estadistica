@@ -324,14 +324,28 @@ def general(request):
     
   
     #METAS CON PORCENTAJES
-    metas_presencial_porcentaje = Metas_formacion.objects.filter(metd_modalidad=modalidad_presencial_metas,met_id__met_fecha_inicio__lte=select_fecha_inicio,met_id__met_fecha_fin__gte=select_fecha_fin) 
+    metas_presencial_porcentaje = Metas_formacion.objects.filter(metd_modalidad=modalidad_presencial_metas, met_id__met_fecha_inicio__lte=select_fecha_fin_ff,met_id__met_fecha_fin__gte=select_fecha_inicio_ff) 
    
-    metas_virtual_porcentaje = Metas_formacion.objects.filter(metd_modalidad=modalidad_virtual_metas,met_id__met_fecha_inicio__lte=select_fecha_inicio, met_id__met_fecha_fin__gte=select_fecha_fin)
+    metas_virtual_porcentaje = Metas_formacion.objects.filter(metd_modalidad=modalidad_virtual_metas,met_id__met_fecha_inicio__lte=select_fecha_fin_ff, met_id__met_fecha_fin__gte=select_fecha_inicio_ff)
     
     metas_presencial_porcentaje_res = list(metas_presencial_porcentaje.values_list('met_formacion_curso_especial','met_formacion_tecnologo','met_formacion_tecnico','met_formacion_auxiliar','met_formacion_operario','met_formacion_evento'))
     metas_virtual_porcentaje_res = list(metas_virtual_porcentaje.values_list('met_formacion_curso_especial','met_formacion_tecnologo','met_formacion_tecnico','met_formacion_auxiliar','met_formacion_operario','met_formacion_evento'))
-    print(metas_virtual_porcentaje_res)
-    metas = metas_presencial_porcentaje_res + metas_virtual_porcentaje_res
+    print('kk',metas_presencial_porcentaje_res)
+    def sumar_tuplas(metas):
+        if len(metas) == 1:
+            return [metas[0]]  # Devuelve una lista con la tupla si hay solo una
+
+    # Suma los elementos de las tuplas
+        suma = tuple(sum(x) for x in zip(*metas))
+        return [suma]  # Devuelve la suma dentro de una lista
+
+    metas_presencial_porcentaje_suma = []  # Inicializa como lista vacía si no hay datos
+    metas_virtual_porcentaje_suma = [] 
+    metas_presencial_porcentaje_suma = sumar_tuplas(metas_presencial_porcentaje_res)
+    metas_virtual_porcentaje_suma = sumar_tuplas(metas_virtual_porcentaje_res)
+   
+    metas = metas_presencial_porcentaje_suma + metas_virtual_porcentaje_suma
+    
     metas_conversion = sum(metas, ())
     metas_valores = list(metas_conversion)
     
@@ -373,28 +387,42 @@ def general(request):
     sin_bilinguismo_activos_data_presencial = sum(sin_bilinguismo_activos_presencial)
     
     
-
-        
+    #funcion para manejar las metas por los diferentes años seleccionados 
+    def procesar_metas(metas):
+        if len(metas) == 1:
+            return [metas[0]] 
+        else:
+            return [sum(metas)] 
         
     #metas presencial bilinguismo 
-    metas_presencial = Metas_formacion.objects.filter(metd_modalidad=1,met_id__in = Meta.objects.filter(Q(met_fecha_inicio__lte=select_fecha_inicio) & Q(met_fecha_fin__gte=select_fecha_fin) ))
+    metas_presencial_bilinguismo = Metas_formacion.objects.filter(metd_modalidad=modalidad_presencial_metas, met_id__met_fecha_inicio__lte=select_fecha_fin_ff,met_id__met_fecha_fin__gte=select_fecha_inicio_ff)
     #bilinguismo presencial
-    metas_formacion_bilinguismo_presencial = metas_presencial.values('met_formacion_bilinguismo')
+    metas_formacion_bilinguismo_presencial = metas_presencial_bilinguismo.values('met_formacion_bilinguismo')
     bilinguismo_meta_presencial = [bilinguismo_metas_presencial['met_formacion_bilinguismo'] for bilinguismo_metas_presencial in metas_formacion_bilinguismo_presencial]
+  
     #sin bilinguismo presencial
-    metas_formacion_sin_bilinguismo_presencial = metas_presencial.values('met_formacion_sin_bilinguismo')
+    metas_formacion_sin_bilinguismo_presencial = metas_presencial_bilinguismo.values('met_formacion_sin_bilinguismo')
     sin_bilinguismo_meta_presencial = [sin_bilinguismo_metas_presencial['met_formacion_sin_bilinguismo'] for sin_bilinguismo_metas_presencial in metas_formacion_sin_bilinguismo_presencial]
     
     #metas presencial sin bilinguismo 
-    metas_virtual = Metas_formacion.objects.filter(metd_modalidad=2,met_id__in = Meta.objects.filter(Q(met_fecha_inicio__lte=select_fecha_inicio) & Q(met_fecha_fin__gte=select_fecha_fin) ))
+    metas_virtual_bilinguismo = Metas_formacion.objects.filter(metd_modalidad=modalidad_presencial_metas, met_id__met_fecha_inicio__lte=select_fecha_fin_ff,met_id__met_fecha_fin__gte=select_fecha_inicio_ff)
     #bilinguismo virtual
-    metas_formacion_bilinguismo_virtual = metas_virtual.values('met_formacion_bilinguismo')
+    metas_formacion_bilinguismo_virtual = metas_virtual_bilinguismo.values('met_formacion_bilinguismo')
     bilinguismo_meta_virtual = [bilinguismo_metas_virtual['met_formacion_bilinguismo'] for bilinguismo_metas_virtual in metas_formacion_bilinguismo_virtual]
     #sin bilinguismo virtual
-    metas_formacion_sin_bilinguismo_virtual = metas_virtual.values('met_formacion_sin_bilinguismo')
+    metas_formacion_sin_bilinguismo_virtual = metas_virtual_bilinguismo.values('met_formacion_sin_bilinguismo')
     sin_bilinguismo_meta_virtual = [sin_bilinguismo_metas_virtual['met_formacion_sin_bilinguismo'] for sin_bilinguismo_metas_virtual in metas_formacion_sin_bilinguismo_virtual]
     
-    metas_complementaria = bilinguismo_meta_presencial + bilinguismo_meta_virtual + sin_bilinguismo_meta_presencial + sin_bilinguismo_meta_virtual
+    
+    bilinguismo_meta_presencial_suma = procesar_metas(bilinguismo_meta_presencial)
+    bilinguismo_meta_virtual_suma = procesar_metas(bilinguismo_meta_virtual)
+    sin_bilinguismo_meta_presencial_suma = procesar_metas(sin_bilinguismo_meta_presencial)
+    sin_bilinguismo_meta_virtual_suma = procesar_metas(sin_bilinguismo_meta_virtual)
+    
+  
+    
+    metas_complementaria = bilinguismo_meta_presencial_suma + bilinguismo_meta_virtual_suma + sin_bilinguismo_meta_presencial_suma + sin_bilinguismo_meta_virtual_suma
+  
     aprendices_activos_complementaria= [bilinguismo_activos_data_presencial , bilinguismo_activos_data_virtual , sin_bilinguismo_activos_data_presencial , sin_bilinguismo_activos_data_virtual]
     
      
@@ -420,9 +448,15 @@ def general(request):
         'sin_bilinguismo_activos_data_virtual':sin_bilinguismo_activos_data_virtual,
         'sin_bilinguismo_activos_data_presencial':sin_bilinguismo_activos_data_presencial,
         #metas tabla
-        'metas_presencial':metas_presencial_porcentaje,
-        'metas_virtual':metas_virtual_porcentaje,
-        
+        'metas_presencial':metas_presencial_porcentaje_suma,
+        'metas_virtual':metas_virtual_porcentaje_suma,
+        'metas_formacion_bilinguismo_virtual':metas_formacion_bilinguismo_virtual,
+        #metas complementaria tablas
+        'metas_formacion_bilinguismo_presencial':bilinguismo_meta_presencial_suma,
+        'metas_formacion_sin_bilinguismo_presencial':sin_bilinguismo_meta_presencial_suma,
+        'metas_formacion_bilinguismo_virtual':bilinguismo_meta_virtual_suma,
+        'metas_formacion_sin_bilinguismo_virtual':sin_bilinguismo_meta_virtual_suma,
+      
         #metas_complementaria
         'metas_complementaria':metas_complementaria,
         'aprendices_activos_complementaria':aprendices_activos_complementaria,

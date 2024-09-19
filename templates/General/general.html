@@ -106,31 +106,21 @@
                             </tr>
                             <tr>
                                 <td class="fixed-column">Meta Presencial</td>
-                                {%for metas_presencial in metas_presencial%}
-                                <td>{{metas_presencial.met_formacion_curso_especial}}</td>
-                                <td>{{metas_presencial.met_formacion_tecnologo}}</td>
-                                <td>{{metas_presencial.met_formacion_tecnico}}</td>
-                                <td>{{metas_presencial.met_formacion_auxiliar}}</td>
-                                <td>{{metas_presencial.met_formacion_operario}}</td>
-                                <td>{{metas_presencial.met_formacion_evento}}</td>
-                           
-                            
-                               
-                                {%endfor%}
-
-                
+                                {% if metas_presencial %}
+                                    {% for meta in metas_presencial.0 %}  {# Accedemos a la primera (y única) tupla #}
+                                        <td>{{ meta }}</td>
+                                    {% endfor %}
+                                {% endif %}
                             </tr>
+                            
                             <tr>
                                 <td class="fixed-column">Meta Virtual</td>
-                                {%for metas_virtuales in metas_virtual%}
-                                <td>{{metas_virtuales.met_formacion_curso_especial}}</td>
-                                <td>{{metas_virtuales.met_formacion_tecnologo}}</td>
-                                <td>{{metas_virtuales.met_formacion_tecnico}}</td>
-                                <td>{{metas_virtuales.met_formacion_auxiliar}}</td>
-                                <td>{{metas_virtuales.met_formacion_operario}}</td>
-                                <td>{{metas_virtuales.met_formacion_evento}}</td>
-                          
-                                {%endfor%}
+                              
+                                {% if metas_virtual %}
+                                {% for meta in metas_virtual.0 %}  {# Accedemos a la primera (y única) tupla #}
+                                    <td>{{ meta }}</td>
+                                {% endfor %}
+                            {% endif %}
                             </tr>
                           
                         </tbody>
@@ -174,24 +164,21 @@
                             </tr>
                             <tr>
                                 <td class="fixed-column">Meta Presencial</td>
-                                {%for metas_presencial_bilinguismo in metas_presencial%}
-                                <td>{{metas_presencial_bilinguismo.met_formacion_bilinguismo}}</td>
-                                <td>{{metas_presencial_bilinguismo.met_formacion_sin_bilinguismo}}</td>
+                              
+                                <td>{{metas_formacion_bilinguismo_presencial.0}}</td>
+                                <td>{{metas_formacion_sin_bilinguismo_presencial.0}}</td>
                                 
                              
-                            
-                               
-                                {%endfor%}
-
-                
+                        
                             </tr>
                             <tr>
                                 <td class="fixed-column">Meta Virtual</td>
-                                {%for meta_presencial_sin_bilinguismo in metas_virtual%}
-                                <td>{{meta_presencial_sin_bilinguismo.met_formacion_bilinguismo}}</td>
-                                <td>{{meta_presencial_sin_bilinguismo.met_formacion_sin_bilinguismo}}</td>
-                               
-                                {%endfor%}
+                             
+                                <td>{{metas_formacion_bilinguismo_virtual.0}}</td>
+                                <td>{{metas_formacion_sin_bilinguismo_virtual.0}}</td>
+                              
+
+
                             </tr>
                           
                         </tbody>
