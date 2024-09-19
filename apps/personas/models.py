@@ -85,7 +85,7 @@ class P04(models.Model):
     nombre_regional = models.CharField(max_length=150)
     codigo_centro = models.CharField(max_length=150)
     nombre_centro = models.CharField(max_length=150)
-    identificador_ficha = models.CharField(max_length=150)
+    identificador_ficha = models.IntegerField()
     identificador_unico_ficha = models.CharField(max_length=150)
     estado_curso = models.CharField(max_length=150)
     codigo_nivel_formacion = models.CharField(max_length=150)
@@ -241,4 +241,7 @@ class Formacion_profesional_integral(models.Model):
     vulnerable = models.DecimalField(max_digits=50, decimal_places=15)
     baja = models.DecimalField(max_digits=50, decimal_places=15)
     sobreejecucion = models.CharField(max_length=150)
+
+class Programa(models.Model):
     
+    nombre_programa_f = models.CharField(max_length=300)

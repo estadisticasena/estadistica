@@ -560,8 +560,11 @@ class Programa(TemplateView):
         selected_centro_de_formacion = request.GET.get('centro_de_formacion','')
         selected_nivel_formacion = request.GET.get('nivel_formacion','')
         selected_programa_formacion = request.GET.get('programa_formacion','')
+        print('pppp',selected_nivel_formacion)
         selected_modalidad = request.GET.get('modalidad','')
         
+        
+
         modalidad_nombre = ''
         id_modalidad = None
         if selected_modalidad == '1':
@@ -601,6 +604,11 @@ class Programa(TemplateView):
         filtros_programa = {}
         
         valores_programa = []
+        
+        
+        centro_de_formacion_res  = None
+        nivel_formacion_res = None
+        
         if selected_centro_de_formacion:
             def obtener_nombre_centro_formacion(id_centro_formacion):
                 nombre_centro_formacion= get_object_or_404(Centro_de_formacion, id=id_centro_formacion)
@@ -618,8 +626,8 @@ class Programa(TemplateView):
                 return nombre_nivel_formacion.nivel_formacion
         
             nivel_formacion_res = obtener_nombre_nivel_formacion(selected_nivel_formacion)
-            
            
+        
             if nivel_formacion_res == 'BILINGUISMO':
                 filtros_programa['nombre_programa_especial'] = 'PROGRAMA DE BILINGUISMO'
                 
@@ -627,9 +635,9 @@ class Programa(TemplateView):
        
             
                 programas_habilitados = P04.objects.filter(nivel_formacion='CURSO ESPECIAL', nombre_programa_formacion__in=programas_bilinguismo).values('nombre_programa_formacion').distinct()
-                
-                valores_programa = [capitalizar_texto(programa['nombre_programa_formacion'])for programa in programas_habilitados]
-           
+             
+                valores_programa = [programa['nombre_programa_formacion']for programa in programas_habilitados]
+            
             elif nivel_formacion_res == 'SIN BILINGUISMO':
 
                 programas_bilinguismo = Bilinguismo_programa.objects.all().values_list('Bil_programa', flat=True)
@@ -644,13 +652,14 @@ class Programa(TemplateView):
                
             else:
                 filtros_programa['nivel_formacion'] = nivel_formacion_res
-                programas_habilitados = P04.objects.filter(nivel_formacion=nivel_formacion_res).values('nombre_programa_formacion').distinct()
+                programas_habilitados = P04.objects.filter(nivel_formacion=nivel_formacion_res,nombre_centro=centro_de_formacion_res).values('nombre_programa_formacion').distinct()
+               
+                valores_programa = [programa['nombre_programa_formacion']for programa in programas_habilitados]
                 
-                valores_programa = [capitalizar_texto(programa['nombre_programa_formacion'])for programa in programas_habilitados]
-                
+        
                 
         if selected_programa_formacion:
-            
+         
             filtros_programa['nombre_programa_formacion'] = selected_programa_formacion
           
         if selected_modalidad:
@@ -667,7 +676,7 @@ class Programa(TemplateView):
             
         
         lista_filtros = P04.objects.filter(**filtros_programa)
-        
+       
         
         municipios_filtro = lista_filtros.values('nombre_municipio_curso').annotate(programa_count=Count('nombre_programa_formacion')).order_by('nombre_municipio_curso')
         paginator1 = Paginator(municipios_filtro,10)

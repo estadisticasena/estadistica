@@ -3,7 +3,7 @@ from django.shortcuts import render
 from apps.personas.forms import PersonaForm, LoginForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
-from apps.personas.models import Persona,Documento_vulnerables_tipo_poblaciones,Documento_vulnerables_poblaciones,Formacion_profesional_integral,Rol,Persona_rol
+from apps.personas.models import Persona,Documento_vulnerables_tipo_poblaciones,Documento_vulnerables_poblaciones,Formacion_profesional_integral,Rol,Persona_rol,Programa
 from apps.personas.forms import EditProfileForm,Form_permissions
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
@@ -235,6 +235,12 @@ def subir_P04(request):
                 
                 # Itera sobre las filas del DataFrame
                 for index, row in df.iterrows():
+                    
+                    nombre_programa = row['NOMBRE_PROGRAMA_FORMACION']
+                    
+                    if not Programa.objects.filter(nombre_programa_f=nombre_programa).exists():
+                        
+                        Programa.objects.create(nombre_programa_f=nombre_programa)
                
                     try:
                         
@@ -275,7 +281,7 @@ def subir_P04(request):
                             'nombre_convenio': row['NOMBRE_CONVENIO'],
                             'ampliacion_cobertura': row['AMPLIACION_COBERTURA'],
                             'codigo_programa_especial': row['CODIGO_PROGRAMA_ESPECIAL'],
-                            'nombre_programa_especial': row['NOMBRE_PROGRAMA_ESPECIAL'],
+                            'nombre_programa_especial': nombre_programa,
                             'numero_cursos': row['NUMERO_CURSOS'],
                             'total_aprendices_masculinos': row['TOTAL_APRENDICES_MASCULINOS'],
                             'total_aprendices_femeninos': row['TOTAL_APRENDICES_FEMENINOS'],
