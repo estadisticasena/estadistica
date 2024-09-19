@@ -146,7 +146,6 @@ class Centro_de_formacion(models.Model):
 
 class Meta(models.Model):
     met_id = models.AutoField(primary_key=True)
-    met_centro_formacion = models.ForeignKey(Centro_de_formacion, on_delete=models.CASCADE)
     met_codigo = models.CharField(max_length=150)
     met_fecha_inicio = models.DateField()
     met_fecha_fin = models.DateField()
@@ -193,6 +192,7 @@ class Estrategia_detalle(models.Model):
 
 class Metas_formacion(models.Model):
     metd_id = models.AutoField(primary_key=True)
+    met_centro_formacion = models.ForeignKey(Centro_de_formacion, on_delete=models.CASCADE)
     metd_modalidad = models.ForeignKey(Modalidad, on_delete=models.CASCADE)
     met_formacion_operario = models.IntegerField()
     met_formacion_auxiliar = models.IntegerField()

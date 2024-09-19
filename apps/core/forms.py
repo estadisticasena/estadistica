@@ -10,7 +10,7 @@ class Form_meta(forms.ModelForm):
         model = Meta
         fields = [
         
-        'met_centro_formacion',
+        
         'met_codigo',
         'met_fecha_inicio',
         'met_fecha_fin',
@@ -29,7 +29,6 @@ class Form_meta(forms.ModelForm):
             'met_fecha_inicio': forms.DateInput(attrs={'class':'form-control', 'type': 'date'}),
             'met_fecha_fin': forms.DateInput(attrs={'class':'form-control', 'type': 'date'}),
             
-            'met_centro_formacion': forms.Select(attrs={'class':'form-control'}),
             'met_codigo': forms.TextInput(attrs={'class':'form-control','aria-label':'Centro de formacion'}),
             'met_año': forms.TextInput(attrs={'class':'form-control','aria-label':'Centro de formacion','oninput': 'this.value = this.value.replace(/[^0-9]/g, "");'}),
             'met_total_otras_poblaciones': forms.TextInput(attrs={'class':'form-control','aria-label':'Centro de formacion','oninput': 'this.value = this.value.replace(/[^0-9]/g, "");'}),
@@ -63,6 +62,7 @@ class Form_meta_formacion(forms.ModelForm):
         model = Metas_formacion
         fields = [
             'metd_id',
+            'met_centro_formacion',
             'metd_modalidad',
             'met_formacion_operario',
             'met_formacion_auxiliar',
@@ -79,6 +79,7 @@ class Form_meta_formacion(forms.ModelForm):
         ]
         widgets =  {
             'metd_modalidad': forms.Select(attrs={'class':'form-control','oninput': 'this.value = this.value.replace(/[^0-9]/g, "");'}),
+            'met_centro_formacion': forms.Select(attrs={'class':'form-control'}),
             'met_formacion_operario': forms.TextInput(attrs={'class':'form-control','oninput': 'this.value = this.value.replace(/[^0-9]/g, "");'}),
             'met_formacion_auxiliar': forms.TextInput(attrs={'class':'form-control','oninput': 'this.value = this.value.replace(/[^0-9]/g, "");'}),
             'met_formacion_tecnico': forms.TextInput(attrs={'class':'form-control','oninput': 'this.value = this.value.replace(/[^0-9]/g, "");'}),

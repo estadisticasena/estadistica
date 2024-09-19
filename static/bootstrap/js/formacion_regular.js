@@ -22,9 +22,8 @@
                 // Simula el clic en el botón de cerrar para cerrar el segundo modal
                 document.querySelector('#submit-second-modal').click();
 
-                // Limpia el formulario después de cerrar el modal
-                form.reset();
-                updateFirstModal(data.meta_id)
+               
+             
             } else {
                 // Muestra errores si la respuesta es fallida
                 console.log('Error:', data.errors);
@@ -35,19 +34,6 @@
         });
     });
 
-   // Función para actualizar el primer modal
-function updateFirstModal(metaId) {
-    fetch(`/get_meta/${metaId}/`) // Asegúrate de que la URL coincide con la ruta en tu servidor
-        .then(response => response.json())
-        .then(data => {
-            // Aquí actualizas los campos del primer modal con los datos recibidos
-            document.querySelector('#id_met_id').textContent = data.meta_id;
-            // Agrega más actualizaciones según sea necesario
-        })
-        .catch(error => {
-            console.error('Error al obtener datos de la meta:', error);
-        });
-}
 
 
 
@@ -84,13 +70,11 @@ function updateFirstModal(metaId) {
 });
 
 //verificacion de formulario metas formacion 
-
 $(document).ready(function() {
     $(document).on('change','#id_met_id',function() {
-        
-        
         var id_met_id = $(this).val();
         var $modal = $(this).closest('.modal');
+        var submitButton = $modal.find('#submit-second-modal_meta_formacion');
 
 
         if (id_met_id) {
@@ -99,13 +83,24 @@ $(document).ready(function() {
                 method: 'GET',
                 data: { id_met_id: id_met_id },
                 success: function(data) {
-
                     var select = $modal.find('#id_metd_modalidad');
+                    var messageDiv = $modal.find('#modalidad-message');
+
                     select.empty();
                     select.append('<option value="">Selecciona modalidad</option>');
-                    $.each(data, function(index, modalidad) {
-                        select.append('<option value="' + modalidad.id + '">' + modalidad.modalidad + '</option>');
-                    });
+                    messageDiv.empty(); // Limpiar el mensaje anterior
+                    
+                    if (data.length === 0) {
+                        // Si no hay modalidades, mostrar un mensaje
+                        messageDiv.text('No hay modalidades habilitadas para este año.');
+                        submitButton.prop('disabled', true); 
+                    } else {
+                        $.each(data, function(index, modalidad) {
+                            select.append('<option value="' + modalidad.id + '">' + modalidad.modalidad + '</option>');
+                        });
+                        messageDiv.hide(); // Ocultar el mensaje
+                        submitButton.prop('disabled', false);
+                    }
                 },
                 error: function() {
                     alert('Error al cargar las modalidades.');
@@ -113,9 +108,11 @@ $(document).ready(function() {
             });
         } else {
             $('#id_metd_modalidad').empty().append('<option value="">Selecciona modalidad</option>');
+            $('#modalidad-message').empty(); // Limpiar el mensaje si no hay selección
         }
     });
 });
+
 
 //fechas inicio y fin 
 document.getElementById('id_met_fecha_inicio').addEventListener('change', validateDates);
